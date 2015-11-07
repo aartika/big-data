@@ -1,4 +1,5 @@
 import com.google.common.base.Optional;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -10,7 +11,13 @@ import java.util.Iterator;
  */
 public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair, ProductPair, DoubleWritable> {
 
-    private int minPairCount = 5;
+    private int minPairCount;
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+        Configuration conf = context.getConfiguration();
+        this.minPairCount = conf.getInt("minPairCount", 5);
+    }
 
     @Override
     protected void reduce(ProductPair key, Iterable<RatingPair> values, Context context) throws IOException, InterruptedException {
@@ -21,7 +28,6 @@ public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair
                     new DoubleWritable(similarity.get())
             );
         }
-
     }
 
     private Optional<Double> cosineSimilarity(Iterator<RatingPair> ratingPairIterator) {

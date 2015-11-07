@@ -1,4 +1,5 @@
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
@@ -8,25 +9,29 @@ import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.util.Tool;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 
 
 /**
  * Created by aartika.rai on 06/11/15.
  */
-public class MovieRecommender {
+public class MovieRecommender extends Configured implements Tool {
 
-    public static void main(String[] args) throws Exception {
+    public int run(String[] args) throws Exception {
+        Configuration conf = getConf();
         if (args.length != 4) {
             System.err.println("Arguments : reviewsPath ratingPairPath similarityPath finalOutputPath");
-            return;
+            return 1;
         }
-        Configuration conf = new Configuration();
         conf.set("reviewsPath", args[0]);
         conf.set("ratingPairPath", args[1]);
         conf.set("similarityPath", args[2]);
         conf.set("finalOutputPath", args[3]);
 
-        System.exit(runPairMakerJob(conf) && runSimilarityCalculatorJob(conf) && runRecommenderJob(conf) ? 0 : 1);
+        return runPairMakerJob(conf) && runSimilarityCalculatorJob(conf) && runRecommenderJob(conf) ? 0 : 1;
     }
 
     private static boolean runPairMakerJob(Configuration conf) throws Exception {
