@@ -10,6 +10,8 @@ import java.util.Iterator;
  */
 public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair, ProductPair, DoubleWritable> {
 
+    private int minPairCount = 5;
+
     @Override
     protected void reduce(ProductPair key, Iterable<RatingPair> values, Context context) throws IOException, InterruptedException {
         Optional<Double> similarity = cosineSimilarity(values.iterator());
@@ -36,7 +38,7 @@ public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair
             sumOfSquares2 += pair.getRating2() * pair.getRating2();
         }
 
-        return countOfPairs < 5 ? Optional.<Double>absent() :
+        return countOfPairs < this.minPairCount ? Optional.<Double>absent() :
                 Optional.of(dotProduct / (Math.sqrt(sumOfSquares1) * Math.sqrt(sumOfSquares2)));
     }
 }
