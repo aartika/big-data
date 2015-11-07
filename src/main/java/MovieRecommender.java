@@ -10,15 +10,19 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
-
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.apache.hadoop.util.ToolRunner;
+import org.apache.hadoop.yarn.webapp.example.MyApp;
 
 
 /**
  * Created by aartika.rai on 06/11/15.
  */
 public class MovieRecommender extends Configured implements Tool {
+
+    public static void main(String[] args) throws Exception {
+        int res = ToolRunner.run(new Configuration(), new MovieRecommender(), args);
+        System.exit(res);
+    }
 
     public int run(String[] args) throws Exception {
         Configuration conf = getConf();
