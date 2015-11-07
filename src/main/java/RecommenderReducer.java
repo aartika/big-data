@@ -27,10 +27,10 @@ public class RecommenderReducer extends Reducer<Text, ProductSimilarityTuple, Te
         while (tupleIterator.hasNext()) {
             ProductSimilarityTuple similarityTuple = tupleIterator.next();
             if (mostSimilar.size() < n) {
-                mostSimilar.add(similarityTuple);
+                mostSimilar.add(new ProductSimilarityTuple(similarityTuple.getProductId(), similarityTuple.getSimilarity()));
             } else if (mostSimilar.peek().compareTo(similarityTuple) < 0) {
                 mostSimilar.poll();
-                mostSimilar.add(similarityTuple);
+                mostSimilar.add(new ProductSimilarityTuple(similarityTuple.getProductId(), similarityTuple.getSimilarity()));
             }
         }
         return Lists.newArrayList(mostSimilar);
