@@ -31,8 +31,8 @@ public class ProductPair implements WritableComparable<ProductPair> {
     }
 
     public int compareTo(@Nonnull ProductPair that) {
-        int ret;
-        if ((ret = this.productId1.compareTo(that.productId1)) != 0) {
+        int ret = this.productId1.compareTo(that.productId1);
+        if (ret != 0) {
             return ret;
         } else {
             return this.productId2.compareTo(that.productId2);

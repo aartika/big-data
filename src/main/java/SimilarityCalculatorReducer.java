@@ -1,7 +1,11 @@
+import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -12,20 +16,29 @@ import java.util.Iterator;
 public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair, ProductPair, DoubleWritable> {
 
     private int minPairCount;
+    private MultipleOutputs multipleOutputs;
+    private String outputPath;
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         Configuration conf = context.getConfiguration();
         this.minPairCount = conf.getInt("minPairCount", 5);
+        this.multipleOutputs = new MultipleOutputs(context);
+        this.outputPath = conf.get("similarityPath");
     }
 
     @Override
     protected void reduce(ProductPair key, Iterable<RatingPair> values, Context context) throws IOException, InterruptedException {
         Optional<Double> similarity = cosineSimilarity(values.iterator());
         if (similarity.isPresent()) {
-            context.write(
+            multipleOutputs.write("seq",
                     new ProductPair(key.getProductId1(), key.getProductId2()),
-                    new DoubleWritable(similarity.get())
+                    new DoubleWritable(similarity.get()),
+                    outputPath + "/" + "seq/part"
+            );
+            multipleOutputs.write("text", NullWritable.get(),
+                    new Text(Joiner.on("\t").join(key.getProductId1(), key.getProductId2(), similarity.get())),
+                    outputPath + "/" + "text/part"
             );
         }
     }

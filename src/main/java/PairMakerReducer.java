@@ -1,8 +1,11 @@
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,6 +14,15 @@ import java.util.List;
  * Created by aartika.rai on 06/11/15.
  */
 public class PairMakerReducer extends Reducer<Text, UserRating, ProductPair, RatingPair> {
+
+    MultipleOutputs multipleOutputs;
+    String outputPath;
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+        this.multipleOutputs = new MultipleOutputs(context);
+        this.outputPath = context.getConfiguration().get("ratingPairPath");
+    }
 
     @Override
     protected void reduce(Text key, Iterable<UserRating> values, Context context) throws IOException, InterruptedException {
@@ -21,21 +33,28 @@ public class PairMakerReducer extends Reducer<Text, UserRating, ProductPair, Rat
             }
         }));
 
+        for (UserRating rating : ratings) {
+            multipleOutputs.write("text", NullWritable.get(),
+                    new Text(Joiner.on("\t").join(key.toString(), rating.getProductId(), rating.getRating())),
+                    this.outputPath + "/" + "text/part"
+            );
+        }
+
         for (int i = 0; i < ratings.size(); i++) {
             for (int j = i + 1; j < ratings.size(); j++) {
                  if (ratings.get(i).getProductId().compareTo(ratings.get(j).getProductId()) < 0) {
-                     writePair(ratings.get(i), ratings.get(j), context);
+                     writePair(ratings.get(i), ratings.get(j));
                  } else {
-                     writePair(ratings.get(j), ratings.get(i), context);
+                     writePair(ratings.get(j), ratings.get(i));
                  }
             }
         }
     }
 
-    private void writePair(UserRating rating1, UserRating rating2, Context context) throws IOException, InterruptedException {
-        context.write(
-                new ProductPair(rating1.getProductId(), rating2.getProductId()),
-                new RatingPair(rating1.getRating(), rating2.getRating())
+    private void writePair(UserRating rating1, UserRating rating2) throws IOException, InterruptedException {
+        multipleOutputs.write("seq", new ProductPair(rating1.getProductId(), rating2.getProductId()),
+                new RatingPair(rating1.getRating(), rating2.getRating()),
+                this.outputPath +  "/" + "seq/part"
         );
     }
 

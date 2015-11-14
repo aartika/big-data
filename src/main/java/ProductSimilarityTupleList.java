@@ -1,6 +1,5 @@
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.hadoop.io.Writable;
@@ -9,6 +8,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
+
+import static com.google.common.collect.Collections2.transform;
 
 /**
  * Created by aartika.rai on 07/11/15.
@@ -42,10 +43,11 @@ public class ProductSimilarityTupleList implements Writable {
 
     @Override
     public String toString() {
-        return "{" + Joiner.on(", ").join(Collections2.transform(tuples, new Function<ProductSimilarityTuple, String>() {
-            public String apply(ProductSimilarityTuple productSimilarityTuple) {
-                return productSimilarityTuple.getProductId() + " : " + productSimilarityTuple.getSimilarity();
-            }
-        })) + "}";
+        return "{" + Joiner.on(", ").join(transform(tuples,
+                new Function<ProductSimilarityTuple, String>() {
+                    public String apply(ProductSimilarityTuple tuple) {
+                        return tuple.getProductId() + " : " + tuple.getSimilarity();
+                    }
+                })) + "}";
     }
 }
