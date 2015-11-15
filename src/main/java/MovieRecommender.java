@@ -37,6 +37,7 @@ public class MovieRecommender extends Configured implements Tool {
         conf.set("ratingPairPath", args[1]);
         conf.set("similarityPath", args[2]);
         conf.set("finalOutputPath", args[3]);
+        conf.set("mapreduce.job.user.classpath.first", "true");
 
         return runPairMakerJob(conf) && runSimilarityCalculatorJob(conf) && runRecommenderJob(conf) ? 0 : 1;
     }

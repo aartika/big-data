@@ -60,4 +60,10 @@ public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair
         return countOfPairs < this.minPairCount ? Optional.<Double>absent() :
                 Optional.of(dotProduct / (Math.sqrt(sumOfSquares1) * Math.sqrt(sumOfSquares2)));
     }
+
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+        this.multipleOutputs.close();
+        super.cleanup(context);
+    }
 }

@@ -58,4 +58,9 @@ public class PairMakerReducer extends Reducer<Text, UserRating, ProductPair, Rat
         );
     }
 
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+        this.multipleOutputs.close();
+        super.cleanup(context);
+    }
 }
