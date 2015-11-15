@@ -38,6 +38,10 @@ public class PairMakerReducer extends Reducer<Text, UserRating, ProductPair, Rat
                     new Text(Joiner.on("\t").join(key.toString(), rating.getProductId(), rating.getRating())),
                     this.outputPath + "/" + "text/part"
             );
+            multipleOutputs.write("text", NullWritable.get(),
+                    new Text(Joiner.on("\t").join(rating.getProductId(), key.toString(), rating.getRating())),
+                    this.outputPath + "/" + "text/part"
+            );
         }
 
         for (int i = 0; i < ratings.size(); i++) {
