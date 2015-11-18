@@ -37,7 +37,7 @@ public class MovieRecommender extends Configured implements Tool {
         conf.set("ratingPairPath", args[1]);
         conf.set("similarityPath", args[2]);
         conf.set("finalOutputPath", args[3]);
-        conf.set("mapreduce.job.user.classpath.first", "true");
+        //conf.set("mapreduce.job.user.classpath.first", "true");
 
         return runPairMakerJob(conf) && runSimilarityCalculatorJob(conf) && runRecommenderJob(conf) ? 0 : 1;
     }
@@ -46,7 +46,7 @@ public class MovieRecommender extends Configured implements Tool {
 
         Job job = Job.getInstance(conf, "Pair Maker");
 
-        job.addFileToClassPath(new Path("/user/aartika.rai/big-data-project-1.0-SNAPSHOT-jar-with-dependencies.jar"));
+        job.addFileToClassPath(new Path("/code/big-data-project-1.0-SNAPSHOT-jar-with-dependencies.jar"));
         Path outputDir = new Path(conf.get("ratingPairPath"));
         FileSystem hdfs = FileSystem.get(conf);
         if (hdfs.exists(outputDir)) {
@@ -71,7 +71,7 @@ public class MovieRecommender extends Configured implements Tool {
 
         Job job = Job.getInstance(conf, "Similarity Calculator");
 
-        job.addFileToClassPath(new Path("/user/aartika.rai/big-data-project-1.0-SNAPSHOT-jar-with-dependencies.jar"));
+        job.addFileToClassPath(new Path("/code/big-data-project-1.0-SNAPSHOT-jar-with-dependencies.jar"));
         Path outputDir = new Path(conf.get("similarityPath"));
         FileSystem hdfs = FileSystem.get(conf);
         if (hdfs.exists(outputDir)) {
@@ -96,7 +96,7 @@ public class MovieRecommender extends Configured implements Tool {
 
         Job job = Job.getInstance(conf, "Recommender");
 
-        job.addFileToClassPath(new Path("/user/aartika.rai/big-data-project-1.0-SNAPSHOT-jar-with-dependencies.jar"));
+        job.addFileToClassPath(new Path("/code/big-data-project-1.0-SNAPSHOT-jar-with-dependencies.jar"));
         Path outputDir = new Path(conf.get("finalOutputPath"));
         FileSystem hdfs = FileSystem.get(conf);
         if (hdfs.exists(outputDir))
