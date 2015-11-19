@@ -12,16 +12,17 @@ public class UserReviewReducer extends Reducer<Text, Text, Text, Text> {
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context)throws IOException, InterruptedException {
         long total = 0;
-        long rating = 0;
-        long length = 0;
+        double rating = 0;
+        double length = 0;
         for( Text v : values){
             String s = v.toString();
             String[] t = s.split(","); //rating,length
-            rating += Long.valueOf(t[0]);
-            length += Long.valueOf(t[1]);
+            rating += Double.valueOf(t[0]);
+            length += Double.valueOf(t[1]);
+            total += 1;
         }
-        Double avgRating = (double) rating / total;
-        Double avgLength = (double) length / total;
-        context.write(key, new Text(total + "," + avgRating + "" + avgLength));
+        Double avgRating = rating / total;
+        Double avgLength = length / total;
+        context.write(key, new Text(total + "," + avgRating + "," + avgLength));
     }
 }

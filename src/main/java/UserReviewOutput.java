@@ -37,7 +37,7 @@ public class UserReviewOutput extends Configured implements Tool{
 
         private static boolean frequencyCountjob(Configuration conf) throws Exception {
 
-            Job job = Job.getInstance(conf, "Frequency count");
+            Job job = Job.getInstance(conf, "Time Series");
 
             job.addFileToClassPath(new Path("/code/big-data-project-1.0-SNAPSHOT-jar-with-dependencies.jar"));
             Path outputDir = new Path(conf.get("userreviewseries"));
