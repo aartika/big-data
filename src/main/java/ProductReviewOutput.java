@@ -2,7 +2,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
@@ -13,10 +12,10 @@ import org.apache.hadoop.util.ToolRunner;
 /**
  * Created by rohit on 11/19/2015.
  */
-public class UserReviewOutput extends Configured implements Tool{
+public class ProductReviewOutput extends Configured implements Tool{
 
         public static void main(String[] args) throws Exception {
-            int res = ToolRunner.run(new Configuration(), new UserReviewOutput(), args);
+            int res = ToolRunner.run(new Configuration(), new ProductReviewOutput(), args);
             System.exit(res);
         }
 
@@ -49,10 +48,10 @@ public class UserReviewOutput extends Configured implements Tool{
             TextInputFormat.setInputPaths(job, conf.get("reviewsPath"));
             TextOutputFormat.<Text, Text>setOutputPath(job, outputDir);
 
-            job.setMapperClass(UserReviewMapper.class);
+            job.setMapperClass(ProductReviewMapper.class);
             job.setMapOutputKeyClass(Text.class);
             job.setMapOutputValueClass(Text.class);
-            job.setReducerClass(UserReviewReducer.class);
+            job.setReducerClass(ProductReviewReducer.class);
 
             return job.waitForCompletion(true);
         }

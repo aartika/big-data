@@ -11,7 +11,7 @@ import java.io.IOException;
  * Created by rohit on 11/19/2015.
  */
 // "product.productId","product.title","avg.score","count.score","product.avgPrice","avg.length"
-public class UserReviewMapper  extends Mapper<LongWritable, Text, Text, Text> {
+public class ProductReviewMapper extends Mapper<LongWritable, Text, Text, Text> {
     @Override
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         try {
