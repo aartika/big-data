@@ -8,7 +8,9 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by aartika.rai on 07/11/15.
@@ -43,6 +45,27 @@ public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair
         }
     }
 
+    private Optional<Double> pearsonSimilarity(Iterator<RatingPair> ratingPairIterator) {
+        int n = 0;
+        double sumxy = 0;
+        double sumx = 0;
+        double sumy = 0;
+        double sumx2 = 0;
+        double sumy2 = 0;
+        while( ratingPairIterator.hasNext()) {
+            n++;
+            RatingPair pair = ratingPairIterator.next();
+            sumx += pair.getRating1();
+            sumy += pair.getRating2();
+            sumxy += pair.getRating1() * pair.getRating2();
+            sumx2 += pair.getRating1() * pair.getRating1();
+            sumy2 += pair.getRating2() * pair.getRating2();
+        }
+        double corr = (n *sumxy - sumx*sumy)/ (
+                Math.sqrt( n*sumx2 - sumx*sumx) * Math.sqrt( n*sumy2 - sumy*sumy )
+        );
+        return n < this.minPairCount ? Optional.<Double>absent() : Optional.of(corr);
+    }
     private Optional<Double> cosineSimilarity(Iterator<RatingPair> ratingPairIterator) {
         double dotProduct = 0.0;
         double sumOfSquares1 = 0.0;

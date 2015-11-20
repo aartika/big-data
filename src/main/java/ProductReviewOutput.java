@@ -26,7 +26,7 @@ public class ProductReviewOutput extends Configured implements Tool{
                 return 1;
             }
             conf.set("reviewsPath", args[0]);
-            conf.set("userreviewseries", args[1]);
+            conf.set("productreviewseries", args[1]);
             //conf.set("mapreduce.job.user.classpath.first", "true");
 
             return  frequencyCountjob(conf) ? 0 : 1;
@@ -36,10 +36,10 @@ public class ProductReviewOutput extends Configured implements Tool{
 
         private static boolean frequencyCountjob(Configuration conf) throws Exception {
 
-            Job job = Job.getInstance(conf, "Time Series");
+            Job job = Job.getInstance(conf, "product Series");
 
             job.addFileToClassPath(new Path("/code/big-data-project-1.0-SNAPSHOT-jar-with-dependencies.jar"));
-            Path outputDir = new Path(conf.get("userreviewseries"));
+            Path outputDir = new Path(conf.get("productreviewseries"));
             FileSystem hdfs = FileSystem.get(conf);
             if (hdfs.exists(outputDir)) {
                 hdfs.delete(outputDir, true);
