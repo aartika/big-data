@@ -64,6 +64,8 @@ public class MovieRecommender extends Configured implements Tool {
         job.setMapOutputValueClass(UserRating.class);
         job.setReducerClass(PairMakerReducer.class);
 
+        job.setNumReduceTasks(200);
+
         return job.waitForCompletion(true);
     }
 
@@ -89,6 +91,9 @@ public class MovieRecommender extends Configured implements Tool {
         job.setMapOutputValueClass(RatingPair.class);
         job.setReducerClass(SimilarityCalculatorReducer.class);
 
+        job.setNumReduceTasks(200);
+
+
         return job.waitForCompletion(true);
     }
 
@@ -113,6 +118,8 @@ public class MovieRecommender extends Configured implements Tool {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(ProductSimilarityTuple.class);
         job.setReducerClass(RecommenderReducer.class);
+
+        job.setNumReduceTasks(200);
 
         return job.waitForCompletion(true);
     }

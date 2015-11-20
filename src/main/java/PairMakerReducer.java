@@ -36,29 +36,31 @@ public class PairMakerReducer extends Reducer<Text, UserRating, ProductPair, Rat
         for (UserRating rating : ratings) {
             multipleOutputs.write("text", NullWritable.get(),
                     new Text(Joiner.on("\t").join(key.toString(), rating.getProductId(), rating.getRating())),
-                    this.outputPath + "/" + "text/part"
+                    this.outputPath + "/" + "text/part_" + context.getTaskAttemptID()
             );
             multipleOutputs.write("text", NullWritable.get(),
                     new Text(Joiner.on("\t").join(rating.getProductId(), key.toString(), rating.getRating())),
-                    this.outputPath + "/" + "text/part"
+                    this.outputPath + "/" + "text/part_" + context.getTaskAttemptID()
             );
+            context.progress();
         }
 
         for (int i = 0; i < ratings.size(); i++) {
             for (int j = i + 1; j < ratings.size(); j++) {
                  if (ratings.get(i).getProductId().compareTo(ratings.get(j).getProductId()) < 0) {
-                     writePair(ratings.get(i), ratings.get(j));
+                     writePair(ratings.get(i), ratings.get(j), context);
                  } else {
-                     writePair(ratings.get(j), ratings.get(i));
+                     writePair(ratings.get(j), ratings.get(i), context);
                  }
+                context.progress();
             }
         }
     }
 
-    private void writePair(UserRating rating1, UserRating rating2) throws IOException, InterruptedException {
+    private void writePair(UserRating rating1, UserRating rating2, Context context) throws IOException, InterruptedException {
         multipleOutputs.write("seq", new ProductPair(rating1.getProductId(), rating2.getProductId()),
                 new RatingPair(rating1.getRating(), rating2.getRating()),
-                this.outputPath +  "/" + "seq/part"
+                this.outputPath +  "/" + "seq/part_" + context.getTaskAttemptID()
         );
     }
 

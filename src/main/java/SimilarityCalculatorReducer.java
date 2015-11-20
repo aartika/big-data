@@ -29,21 +29,21 @@ public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair
 
     @Override
     protected void reduce(ProductPair key, Iterable<RatingPair> values, Context context) throws IOException, InterruptedException {
-        Optional<Double> similarity = cosineSimilarity(values.iterator());
+        Optional<Double> similarity = cosineSimilarity(values.iterator(), context);
         if (similarity.isPresent()) {
             multipleOutputs.write("seq",
                     new ProductPair(key.getProductId1(), key.getProductId2()),
                     new DoubleWritable(similarity.get()),
-                    outputPath + "/" + "seq/part"
+                    outputPath + "/" + "seq/part_" + context.getTaskAttemptID()
             );
             multipleOutputs.write("text", NullWritable.get(),
                     new Text(Joiner.on("\t").join(key.getProductId1(), key.getProductId2(), similarity.get())),
-                    outputPath + "/" + "text/part"
+                    outputPath + "/" + "text/part_" + context.getTaskAttemptID()
             );
         }
     }
 
-    private Optional<Double> cosineSimilarity(Iterator<RatingPair> ratingPairIterator) {
+    private Optional<Double> cosineSimilarity(Iterator<RatingPair> ratingPairIterator, Context context) {
         double dotProduct = 0.0;
         double sumOfSquares1 = 0.0;
         double sumOfSquares2 = 0.0;
@@ -55,6 +55,7 @@ public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair
             dotProduct += pair.getRating1() * pair.getRating2();
             sumOfSquares1 += pair.getRating1() * pair.getRating1();
             sumOfSquares2 += pair.getRating2() * pair.getRating2();
+            context.progress();
         }
 
         return countOfPairs < this.minPairCount ? Optional.<Double>absent() :
