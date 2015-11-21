@@ -98,6 +98,17 @@ public class SimilarityCalculatorReducer extends Reducer<ProductPair, RatingPair
                         Optional.of(dotProduct / (Math.sqrt(sumOfSquares1) * Math.sqrt(sumOfSquares2)));
             }
 
+        },
+
+        INTERSECTION {
+            @Override
+            public Optional<Double> calculateSimilarity(Iterator<RatingPair> ratingPairIterator, int minPairCount, Context context) {
+                int count = 0;
+                while (ratingPairIterator.hasNext()) {
+                    count++;
+                }
+                return Optional.of((double) count);
+            }
         };
 
         public abstract Optional<Double> calculateSimilarity(Iterator<RatingPair> ratingPairIterator, int minPairCount, Context context);
